@@ -1,72 +1,64 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
  * Created by shrey on 2017-09-26.
- * This program declares the robot 
+ *
+ *
+ * This class defines all the different hardware pieces in a single robot:
+ *
+ * rightFrontDrive = front right motor
+ * leftFrontDrive = front left motor
+ * rightBackDrive = back right motor
+ * leftBackDrive = back left motor
+ *
  */
 
-public class PushBotTeleOp extends LinearOpMode{
-    // Declares Op modes
+public class HardwarePushBot{
 
-    HardwarePushBot robot = new HardwarePushBot();      //uses pushbot's hardware
+    public DcMotor rightFrontDrive = null;
+    public DcMotor leftFrontDrive = null;
+    public DcMotor rightBackDrive = null;
+    public DcMotor leftBackDrive = null;
 
-    @Override
-    public void runOpMode() {
-        double left;
-        double right;
-        double drive;
-        double turn;
-        double max;
+    /* local OpMode members. */
+    public HardwareMap hwMap           =  null;
+    private ElapsedTime period  = new ElapsedTime();
 
-        /* Initialize the hardware variables.
-         * The init() method of the hardware class does all the work here
-         */
-        robot.init(hardwareMap);
+    /* Constructor */
+    public HardwarePushBot(){
 
-        // Send telemetry message to signify robot waiting;
-        telemetry.addData("Say", "Hello Driver");    //
-        telemetry.update();
+    }
 
-        // Wait for the game to start (driver presses PLAY)
-        waitForStart();
+    /* Initialize standard Hardware interfaces */
+    public void init(HardwareMap ahwMap) {
+        // Save reference to Hardware map
+        hwMap = ahwMap;
 
-        // run until the end of the match (driver presses STOP)
-        while (opModeIsActive()) {
+        // Define and Initialize Motors
+        rightFrontDrive = hwMap.get(DcMotor.class, "right_front_drive");
+        leftFrontDrive  = hwMap.get(DcMotor.class, "left_front_drive");
+        rightBackDrive = hwMap.get(DcMotor.class, "right_back_drive");
+        leftBackDrive = hwMap.get(DcMotor.class, "left_back_drive");
+        //leftDrive.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
+        //rightDrive.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
 
-            // Run wheels in POV mode (note: The joystick goes negative when pushed forwards, so negate it)
-            // In this mode the Left stick moves the robot fwd and back, the Right stick turns left and right.
-            // This way it's also easy to just drive straight, or just turn.
-            drive = -gamepad1.left_stick_y;
-            turn  =  gamepad1.right_stick_x;
+        // Set all motors to zero power
+        rightFrontDrive.setPower(0);
+        leftFrontDrive.setPower(0);
+        rightBackDrive.setPower(0);
+        leftBackDrive.setPower(0);
 
-            // Combine drive and turn for blended motion.
-            left  = drive + turn;
-            right = drive - turn;
-
-            // Normalize the values so neither exceed +/- 1.0
-            max = Math.max(Math.abs(left), Math.abs(right));
-            if (max > 1.0)
-            {
-                left /= max;
-                right /= max;
-            }
-
-            // Output the safe vales to the motor drives.
-            robot.rightFrontDrive.setPower(right);
-            robot.leftFrontDrive.setPower(left);
-            robot.rightBackDrive.setPower(right);
-            robot.leftBackDrive.setPower(left);
-
-            // Send telemetry message to signify robot running.
-            telemetry.addData("left",  "%.2f", left);
-            telemetry.addData("right", "%.2f", right);
-            telemetry.update();
-
-            // Pace this loop so jaw action is reasonable speed.
-            sleep(50);
-        }
+        // Set all motors to run without encoders.
+        // May want to use RUN_USING_ENCODERS if encoders are installed.
+        rightFrontDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftFrontDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightBackDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftBackDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
 }
