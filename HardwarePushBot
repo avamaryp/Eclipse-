@@ -1,0 +1,65 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+
+/**
+ * Created by shrey on 2017-09-26.
+ *
+ *
+ * This class defines all the different hardware pieces in a single robot:
+ *
+ * rightFrontDrive = front right motor
+ * leftFrontDrive = front left motor
+ * rightBackDrive = back right motor
+ * leftBackDrive = back left motor
+ *
+ */
+
+public class HardwarePushBot{
+
+    public DcMotor rightFrontDrive = null;
+    public DcMotor leftFrontDrive = null;
+    public DcMotor rightBackDrive = null;
+    public DcMotor leftBackDrive = null;
+
+    /* local OpMode members. */
+    public HardwareMap hwMap           =  null;
+    private ElapsedTime period  = new ElapsedTime();
+
+    /* Constructor */
+    public HardwarePushBot(){
+
+    }
+
+    /* Initialize standard Hardware interfaces */
+    public void init(HardwareMap ahwMap) {
+        // Save reference to Hardware map
+        hwMap = ahwMap;
+
+        // Define and Initialize Motors
+            rightFrontDrive = hwMap.dcMotor.get("rfd");
+            leftFrontDrive = hwMap.dcMotor.get("lfd");
+            rightBackDrive = hwMap.dcMotor.get("rbd");
+            leftBackDrive = hwMap.dcMotor.get("lbd");
+
+        //leftDrive.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
+        //rightDrive.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
+
+        // Set all motors to zero power
+        rightFrontDrive.setPower(0);
+        leftFrontDrive.setPower(0);
+        rightBackDrive.setPower(0);
+        leftBackDrive.setPower(0);
+
+        // Set all motors to run without encoders.
+        // May want to use RUN_USING_ENCODERS if encoders are installed.
+        rightFrontDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftFrontDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightBackDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftBackDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
+
+}
