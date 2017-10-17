@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -17,7 +18,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
  * leftBackDrive = left back motor
  */
 
-@TeleOp(name="Test", group="group")
+@TeleOp(name="TeleOp", group="group")
 
 public class TeleOpMode extends LinearOpMode {
 
@@ -31,9 +32,10 @@ public class TeleOpMode extends LinearOpMode {
     private DcMotor rightBackDrive = null;
     private DcMotor leftBackDrive = null;
 
-    //private DcMotor frontBottom = null;
-    //private DcMotor frontBottomRight = null;
-    //private DcMotor frontBottomLeft = null;
+    //private Servo leftFrontClaw = null;
+    //private Servo rightFrontClaw = null;
+
+    //private DcMotor glyphLift = null;
 
     @Override
     public void runOpMode() throws InterruptedException{
@@ -51,9 +53,10 @@ public class TeleOpMode extends LinearOpMode {
         rightBackDrive = hardwareMap.dcMotor.get("rbd");  //2
         leftBackDrive = hardwareMap.dcMotor.get("lbd");   //3
 
-        //frontBottom = hardwareMap.dcMotor.get("fbc");     //0
-        //frontBottomRight = hardwareMap.dcMotor.get("fbr");//1
-        //frontBottomLeft = hardwareMap.dcMotor.get("fbl");
+        //glyphLift = hardwareMap.dcMotor.get("gl");      //1
+
+        //leftFrontClaw = hardwareMap.servo.get("lfc");
+        //rightFrontClaw = hardwareMap,servo.get("rfc");
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
@@ -63,9 +66,10 @@ public class TeleOpMode extends LinearOpMode {
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
 
-        //frontBottom.setDirection(DcMotor.Direction.FORWARD);
-        //frontBottomRight.setDirection(DcMotor.Direction.FORWARD);
-        //frontBottomLeft.setDirection(DcMotor.Direction.FORWARD);
+        //glyphLift.setDirection(DcMotor.Direction.REVERSE);
+
+        //leftFrontClaw.setPosition(0.0);
+        //rightFrontClaw.setPosition(0.0);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -89,20 +93,47 @@ public class TeleOpMode extends LinearOpMode {
             double rightPower = -gamepad1.right_stick_y ;
 
             // Send calculated power to wheels
-            rightFrontDrive.setPower(rightPower * 0.9);
+            rightFrontDrive.setPower(rightPower);
             leftFrontDrive.setPower(leftPower);
-            rightBackDrive.setPower(rightPower * 0.9);
+            rightBackDrive.setPower(rightPower);
             leftBackDrive.setPower(leftPower);
 
-            //Send the values to the motors for the elevator
-            //frontBottom.setPower(gamepad2.right_stick_y);
-            //frontBottomRight.setPower(gamepad2.left_stick_y);
-            //frontBottomLeft.setPower(gamepad2.left_stick_y);
+            if(gamepad1.right_stick_x > 0.5){ //turning right
+                rightFrontDrive.setPower(-rightPower);
+                leftBackDrive.setPower(leftPower);
+                rightBackDrive.setPower(-rightPower);
+                leftFrontDrive.setPower(leftPower);
+            }
+
+            if(gamepad1.right_stick_x < -0.5){ //turning left
+                leftFrontDrive.setPower(-leftPower);
+                rightBackDrive.setPower(rightPower);
+                leftBackDrive.setPower(-leftPower);
+                rightFrontDrive.setPower(rightPower);
+            }
+
+            //glyphLift.setPower(gamepad2.left_stick_y);
+
+            /*double open = 0.8;
+            double close = 0.2;
+            if(gamepad2.x){
+                leftFrontClaw.setPosition(open);
+                rightFrontClaw.setPosition(open);
+            }
+
+            if(gamepad2.b){
+                leftFrontClaw.setPosition(close);
+                rightFrontClaw.setPosition(close);
+            }*/
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runTime.toString());
             telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
+            telemetry.addData("Right_Stick_y", gamepad1.right_stick_y);
+            telemetry.addData("Left_Stick_x", gamepad1.left_stick_x);
             telemetry.update();
         }
     }
+
+
 }
