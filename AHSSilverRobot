@@ -1,0 +1,89 @@
+package SilverBot;
+
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
+
+/**
+ * This class defines all the specific hardware for the AHS Silver robot.
+ * <p>
+ * This hardware class assumes the following device names have been configured on the robot:
+ */
+
+public class AHSSilverRobot {
+	// These ID strings must match those set in the Robot Controller configuration.
+	public static final String LEFT_DRIVE_MOTOR_ID = "left_drive";
+	public static final String RIGHT_DRIVE_MOTOR_ID = "right_drive";
+	public static final String LEFT_SHOOTING_MOTOR_ID = "left_shoot";
+	public static final String RIGHT_SHOOTING_MOTOR_ID = "right_shoot";
+	public static final String FLAPPY_BRUSH_MOTOR_ID = "m1";
+	public static final String WINDER_MOTOR_ID = "m2";
+	public static final String LATCH_SERVO_ID = "latch";
+
+
+	public DcMotor leftDriveMotor = null;
+	public DcMotor rightDriveMotor = null;
+	public DcMotor leftShootingMotor = null;
+	public DcMotor rightShootingMotor = null;
+	public DcMotor beaterBrushMotor = null;
+	public DcMotor winderMotor = null;
+	public Servo latchServo = null;
+
+	/* local OpMode members. */
+	HardwareMap hwMap = null;
+
+	/* Constructor */
+	public AHSSilverRobot() {
+	}
+
+	/* Initialize standard Hardware interfaces */
+	public void init(HardwareMap ahwMap) {
+		// Save reference to Hardware map
+		hwMap = ahwMap;
+
+		// Connect motors to HardwareMap map from OpMode, and set them to 0 power
+		// Note: check to see if motor is in HwMap first to avoid crashes
+		if (hwMap.get(FLAPPY_BRUSH_MOTOR_ID) != null) {
+			beaterBrushMotor = hwMap.dcMotor.get(FLAPPY_BRUSH_MOTOR_ID);
+			beaterBrushMotor.setPower(0);
+			beaterBrushMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+		}
+
+		if (hwMap.get(LEFT_SHOOTING_MOTOR_ID) != null) {
+			leftShootingMotor = hwMap.dcMotor.get(LEFT_SHOOTING_MOTOR_ID);
+			leftShootingMotor.setPower(0);
+			leftShootingMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+		}
+
+		if (hwMap.get(RIGHT_SHOOTING_MOTOR_ID) != null) {
+			rightShootingMotor = hwMap.dcMotor.get(RIGHT_SHOOTING_MOTOR_ID);
+			rightShootingMotor.setPower(0);
+			rightShootingMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+		}
+
+		if (hwMap.get(LEFT_DRIVE_MOTOR_ID) != null) {
+			leftDriveMotor = hwMap.dcMotor.get(LEFT_DRIVE_MOTOR_ID);
+			leftDriveMotor.setPower(0);
+			leftDriveMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+		}
+
+		if (hwMap.get(RIGHT_DRIVE_MOTOR_ID) != null) {
+			rightDriveMotor = hwMap.dcMotor.get(RIGHT_DRIVE_MOTOR_ID);
+			rightDriveMotor.setPower(0);
+			rightDriveMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+		}
+
+		if (hwMap.get(WINDER_MOTOR_ID) != null) {
+			winderMotor = hwMap.dcMotor.get(WINDER_MOTOR_ID);
+			winderMotor.setPower(0);
+			winderMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+		}
+
+		if (hwMap.get(LATCH_SERVO_ID) != null) {
+			latchServo = hwMap.servo.get(LATCH_SERVO_ID);
+			latchServo.setPosition(-1.0);
+		}
+
+	}
+
+}
