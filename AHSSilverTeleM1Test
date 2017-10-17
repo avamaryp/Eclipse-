@@ -1,0 +1,213 @@
+package SilverBot;
+
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+import SilverBot.AHSSilverRobot;
+
+/**
+ * This file provides basic Telop driving for the AHS Silver robot.
+ * The code is structured as an Iterative OpMode.
+ * <p>
+ * Gamepad is a Logitech F310. Buttons: Yellow = Y, Blue = X, Red = B, Green = A
+ */
+
+@TeleOp(name = "AHS Teleop", group = "SilverBot")
+//@Disabled
+
+public class AHSSilverTeleM1Test extends OpMode {
+
+	/* Declare OpMode members. */
+	AHSSilverRobot robot = new AHSSilverRobot();
+
+	private ElapsedTime runtime = new ElapsedTime();
+
+
+	/*
+	 * Code to run ONCE when the driver hits INIT
+	 */
+	@Override
+	public void init() {
+	    /* Initialize the hardware variables.
+	     * The init() method of the hardware class does all the work here
+         */
+		robot.init(hardwareMap);
+
+		// Send telemetry message to signify robot waiting;
+		telemetry.addData("AHS Silver", "Init complete");
+	}
+
+	/*
+	 * Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
+	 */
+	@Override
+	public void init_loop() {
+	}
+
+	/*
+	 * Code to run ONCE when the driver hits PLAY
+	 */
+	@Override
+	public void start() {
+		runtime.reset();
+	}
+
+	/*
+	 * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
+	 */
+	final double BRUSH_INTAKE_SPEED = 1.0;
+	final double BRUSH_OUT_SPEED = -1.0;
+	final double SHOOTER_SPEED = 1.0;
+	double leftDriveSpeed = 0;
+	double rightDriveSpeed = 0;
+	final double WINDER_DRIVE_SPEED_UP = -0.45f; // NEGATIVE GOES UP
+	final double WINDER_DRIVE_SPEED_DOWN = 0.1f; // POSITIVE GOES DOWN
+
+	final double LATCH_OPEN_POSITION = 0.8f; //-1 is latched position (0 of 255)
+
+	private boolean latchHasOpened = false;
+
+	@Override
+	public void loop() {
+
+		// Run wheels in tank mode (note: The joystick goes negative when pushed forwards, so negate it)
+		leftDriveSpeed = gamepad1.left_stick_y;
+		rightDriveSpeed = -gamepad1.right_stick_y;
+
+		robot.rightDriveMotor.setPower(rightDriveSpeed);
+		robot.leftDriveMotor.setPower(leftDriveSpeed);
+		telemetry.addData("Drives", "LEFT = %.2f RIGHT = %.2f", leftDriveSpeed, rightDriveSpeed);
+
+		// Gamepad 2 buttons also toggle motors
+		toggleShootingMotorsOnOff(gamepad2.a);      // green
+		toggleBrushIntakeMotorOnOff(gamepad2.y);    // yellow
+		toggleBrushOutMotorOnOff(gamepad2.x);       // blue
+
+		if (gamepad1.b) { //red
+			stop();
+		}
+
+		// Winder motor - can only go up when latch has been opened
+		if (latchHasOpened && gamepad2.left_bumper) {
+			robot.winderMotor.setPower(WINDER_DRIVE_SPEED_DOWN);
+			double windPower = robot.winderMotor.getPower();
+			telemetry.addData("Winder", "UP %.2f", windPower);
+		} else if (latchHasOpened && gamepad2.right_bumper) {
+			robot.winderMotor.setPower(WINDER_DRIVE_SPEED_UP);
+			double windPower = robot.winderMotor.getPower();
+			telemetry.addData("Winder", "DOWN %.2f", windPower);
+		} else if (gamepad2.right_bumper || gamepad2.left_bumper) {
+			telemetry.addData("Winder", "PRESS [RED] LATCH BUTTON TO OPEN LATCH FIRST");
+		} else {
+			robot.winderMotor.setPower(0.0);
+			telemetry.addData("Winder", "OFF");
+		}
+
+
+		// Fork latch
+		if (gamepad2.b && !latchHasOpened) {
+			latchHasOpened = true;
+			robot.latchServo.setPosition(LATCH_OPEN_POSITION);
+		}
+
+		telemetry.addData("Brush ", "%f", (robot.beaterBrushMotor.getPower()));
+
+		// Telemetry for latch
+		if (latchHasOpened) {
+			telemetry.addData("Latch", "OPEN %.2f", robot.latchServo.getPosition());
+		} else {
+			telemetry.addData("Latch", "CLOSED %.2f - port #%01d", robot.latchServo.getPosition(), robot.latchServo.getPortNumber());
+		}
+
+	}
+
+	/*
+	 * Code to run ONCE after the driver hits STOP
+	 */
+	@Override
+	public void stop() {
+		robot.rightDriveMotor.setPower(0.0);
+		robot.leftDriveMotor.setPower(0.0);
+		robot.beaterBrushMotor.setPower(0.0);
+
+		if (robot.leftShootingMotor != null) {
+			robot.leftShootingMotor.setPower(0.0);
+			robot.rightShootingMotor.setPower(0.0);
+		}
+		isShootingMotorRunning = false;
+	}
+
+	/*
+	Toggle Shooting Motors
+	* Keep feeding state of gamepad button to method and when it goes from on to off
+	* (user let go of button), then toggle the motors on or off.
+	*/
+	boolean lastShootingButtonState = false;
+	boolean isShootingMotorRunning = false;
+
+	private void toggleShootingMotorsOnOff(boolean buttonState) {
+		if (buttonState == false && lastShootingButtonState == true) {
+			//Toggle motor on off
+			if (isShootingMotorRunning) {
+				isShootingMotorRunning = false;
+				if (robot.leftShootingMotor != null && robot.rightShootingMotor != null) {
+					robot.leftShootingMotor.setPower(0.0);
+					robot.rightShootingMotor.setPower(0.0);
+				}
+			} else {
+				isShootingMotorRunning = true;
+				if (robot.leftShootingMotor != null && robot.rightShootingMotor != null) {
+					robot.leftShootingMotor.setPower(-SHOOTER_SPEED);
+					robot.rightShootingMotor.setPower(SHOOTER_SPEED);
+				}
+			}
+			lastShootingButtonState = false;
+		} else {
+			lastShootingButtonState = buttonState;
+		}
+	}
+
+	/*
+	* Toggle Brush IN
+	*/
+	boolean lastBrushIntakeButtonState = false;
+
+	private void toggleBrushIntakeMotorOnOff(boolean buttonState) {
+		if (robot.beaterBrushMotor == null) return;
+
+		if (buttonState == false && lastBrushIntakeButtonState == true) {
+			//Toggle motor on off
+			if (robot.beaterBrushMotor.getPower() != 0.0) {
+				robot.beaterBrushMotor.setPower(0.0);
+			} else {
+				robot.beaterBrushMotor.setPower(BRUSH_INTAKE_SPEED);
+			}
+			lastBrushIntakeButtonState = false;
+		} else {
+			lastBrushIntakeButtonState = buttonState;
+		}
+	}
+
+	/*
+	Toggle Brush OUT
+    */
+	boolean lastBrushOutButtonState = false;
+
+	private void toggleBrushOutMotorOnOff(boolean buttonState) {
+		if (robot.beaterBrushMotor == null) return;
+
+		if (buttonState == false && lastBrushOutButtonState == true) {
+			//Toggle motor on off
+			if (robot.beaterBrushMotor.getPower() != 0.0) {
+				robot.beaterBrushMotor.setPower(0.0);
+			} else {
+				robot.beaterBrushMotor.setPower(BRUSH_OUT_SPEED);
+			}
+			lastBrushOutButtonState = false;
+		} else {
+			lastBrushOutButtonState = buttonState;
+		}
+	}
+
+}
