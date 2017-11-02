@@ -1,0 +1,229 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
+/**
+ * Created by shrey on 2017-09-26.
+ * This program intializes the motors before the TeleOp period, then takes input from the gamepad controllers
+ * to drive the motors at a speed given by the driver
+ * rightFrontDrive = right front motor
+ * leftFrontDrive = left front motor
+ * rightBackDrive = right back motor
+ * leftBackDrive = left back motor
+ */
+
+@TeleOp(name="TeleOp", group="group")
+
+public class TeleOpMode extends LinearOpMode {
+
+    // Declaring and defining the motors
+
+    //Drive
+    private HardwarePushBot robot = new HardwarePushBot();
+    public ElapsedTime runTime =  new ElapsedTime();
+    private DcMotor rightFrontDrive = null;
+    private DcMotor leftFrontDrive = null;
+    private DcMotor rightBackDrive = null;
+    private DcMotor leftBackDrive = null;
+    private DcMotor claw = null;
+    //private DcMotor glyphLift = null;
+    //private Servo glyphLiftRight = null;
+    //private Servo glyphLiftLeft = null;
+
+    // "never used" means that the motor hasn't been called
+    public void forwardDrive(double speed){
+        rightFrontDrive.setPower(-speed);
+        leftFrontDrive.setPower(-speed);
+        rightBackDrive.setPower(-speed);
+        leftBackDrive.setPower(-speed);
+    }
+
+    public void backwardDrive(double speed){
+        rightFrontDrive.setPower(speed);
+        leftFrontDrive.setPower(speed);
+        rightBackDrive.setPower(speed);
+        leftBackDrive.setPower(speed);
+    }
+
+    public void stopMotors(){ //always zero
+        rightFrontDrive.setPower(0);
+        leftFrontDrive.setPower(0);
+        rightBackDrive.setPower(0);
+        leftBackDrive.setPower(0);
+    }
+
+    public void turnLeft(double speed){
+        rightFrontDrive.setPower(speed);
+        leftFrontDrive.setPower(-speed);
+        rightBackDrive.setPower(speed);
+        leftBackDrive.setPower(-speed);
+    }
+
+    public void turnRight(double speed){
+        rightFrontDrive.setPower(-speed);
+        leftFrontDrive.setPower(speed);
+        rightBackDrive.setPower(-speed);
+        leftBackDrive.setPower(speed);
+    }
+
+   /* public void glyph (double speed){
+        glyphLift.setPower(speed);
+    }
+
+    public void openGlyph (){
+        glyphLiftRight.setPosition(0.8);
+        glyphLiftLeft.setPosition(-0.8);
+    }
+
+    public void closeGlyph (){
+        glyphLiftRight.setPosition(0.3);
+        glyphLiftLeft.setPosition(-0.3);
+    }*/
+
+   public int moveBy(int angleDefined){
+       int ticks = angleDefined * 4;
+       return ticks;
+   }
+    @Override
+    public void runOpMode() throws InterruptedException{
+
+        //Intialize the robot's hardware from HardwareMap amd allows you to run all this code within TeleOp
+        robot.init(hardwareMap);
+
+        telemetry.addData("Status", "Initialized");
+        telemetry.addData("Hello Driver", "Press Play Button");
+        telemetry.update();
+
+        //this part is called intializing the variables or hardware elements
+        rightFrontDrive = hardwareMap.dcMotor.get("rfd"); //0
+        leftFrontDrive = hardwareMap.dcMotor.get("lfd");  //1
+        rightBackDrive = hardwareMap.dcMotor.get("rbd");  //2
+        leftBackDrive = hardwareMap.dcMotor.get("lbd");   //3
+        //glyphLift = hardwareMap.dcMotor.get ("gyl");
+        //glyphLiftRight = hardwareMap.servo.get("glr"); //0
+        //glyphLiftLeft = hardwareMap.servo.get("gll"); //0
+        claw = hardwareMap.dcMotor.get("claw");
+
+
+        // Most robots need the motor on one side to be reversed to drive forward
+        // Reverse the motor that runs backwards when connected directly to the battery
+        //Drive Sub-system
+        rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
+        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
+        leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
+
+        claw.setDirection(DcMotor.Direction.FORWARD);
+        // Wait for the game to start (driver presses PLAY)
+        waitForStart();
+
+        // run until the end of the match (driver presses STOP)
+
+
+        while (opModeIsActive()) {
+
+            // Setup a variable for each drive wheel to save power level for telemetry
+            // Choose to drive using either Tank Mode, or POV Mode
+            // Comment out the method that's not used.  The default below is POV.
+
+            // POV Mode uses left stick to go forward, and right stick to turn.
+            // - This uses basic math to combine motions and is easier to drive straight.
+            /*double drive = gamepad1.right_stick_y;
+            double turn  =  gamepad1.right_stick_x;
+            double leftPower    = Range.clip(drive + turn, +1.0, -1.0) ;
+            double rightPower   = Range.clip(drive - turn, -1.0, +1.0) ;
+            // Tank Mode uses one stick to control each wheel.*/
+            // - This requires no math, but it is hard to drive forward slowly and keep straight.
+            double power  = -gamepad1.right_stick_y;
+            //double turn = gamepad1.left_stick_x;
+            double reverse_Thres = -0.5;
+            double forward_Thres = 0.5;
+            double left_Thres = -0.5;
+            double right_Thres = 0.5;
+            double liftPow = gamepad2.left_stick_y;
+            double up_Thres = 0.5;
+            double down_Thres = -0.5;
+            // Send calculated power to wheels
+
+           /* if(gamepad1.right_stick_y > reverse_Thres && gamepad1.right_stick_y < forward_Thres){
+                stopMotors();
+            }else{
+                if(gamepad1.right_stick_y < reverse_Thres){
+                    backwardDrive(power);
+                }else{
+                    forwardDrive(-power);
+                }
+            }*/
+
+
+
+           if(gamepad1.right_stick_y > reverse_Thres && gamepad1.right_stick_y < forward_Thres){
+                //stop all motors
+                stopMotors();
+            }else if(gamepad1.right_stick_y < reverse_Thres){//backward driving
+                if(gamepad1.left_stick_x < left_Thres){
+                    //turning left
+                    turnLeft(power);
+                }else if(gamepad1.left_stick_x > right_Thres){
+                    //turning Right
+                    turnRight(power);
+                }else{
+                    //driving backwards
+                    backwardDrive(power);
+                }
+            }else{//forward driving
+                if(gamepad1.left_stick_x < left_Thres){
+                    //turning left
+                    turnLeft(power);
+                }else if(gamepad1.left_stick_x > right_Thres){
+                    //turning Right
+                    turnRight(power);
+                }else{
+                    //driving straight
+                    forwardDrive(-power);
+                }
+
+                if(liftPow < up_Thres && liftPow > down_Thres) {
+                    glyph(0);
+
+                }else if(liftPow > up_Thres){
+                    glyph(liftPow);
+
+                }else{
+                    glyph(-liftPow);
+                }
+            }
+
+          /* if(gamepad2.a){
+               openGlyph();
+           }
+
+           if(gamepad2.b){
+               closeGlyph();
+           }*/
+
+
+          if(gamepad2.y){
+              moveBy(90);
+          }
+          if(gamepad2.x){
+              moveBy(-90);
+          }
+            // Show the elapsed game time and wheel power.
+            telemetry.addData("Status", "Run Time: " + runTime.toString());
+            telemetry.addData("Motors", "power (%.2f)", power);
+            telemetry.addData("Right_Stick_y", gamepad1.right_stick_y);
+            telemetry.addData("Left_Stick_x", gamepad1.left_stick_x);
+            telemetry.update();
+        }
+
+    }
+
+
+}
