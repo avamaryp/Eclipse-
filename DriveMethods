@@ -1,0 +1,108 @@
+package org.firstinspires.ftc.teamcode;
+
+
+/**
+ * Created by shrey on 2017-11-05.
+ */
+
+public class DriveMethods extends New_TeleOp{
+    /*
+     * This set of methods are used to make the drive drive forward and backward
+     */
+
+    // Used to move right side
+
+    public static void driveRight(double speed){
+        rightFrontDrive.setPower(speed);
+        rightBackDrive.setPower(speed);
+    }
+
+    public static void driveLeft(double speed){
+        leftFrontDrive.setPower(speed);
+        leftBackDrive.setPower(speed);
+    }
+    // Used to move backward
+    public static void backwardDrive(double speed) {
+        rightFrontDrive.setPower(speed);
+        leftFrontDrive.setPower(speed);
+        rightBackDrive.setPower(speed);
+        leftBackDrive.setPower(speed);
+    }
+
+    /*
+     * This method is used to stop the drive motors in order for the robot to stop when in between
+     * the two thresholds. It's important to do this so the robot will stop, safely
+     */
+    public static void stopRightMotors() { //always zero
+        rightFrontDrive.setPower(0);
+        rightBackDrive.setPower(0);
+    }
+
+    public static void stopLeftMotors(){
+        leftFrontDrive.setPower(0);
+        leftBackDrive.setPower(0);
+    }
+
+    /*
+     * This set of methods is used to turn the robot by making setting each in a different direction
+     * we multiply the speed by 0.2 to slow down the turn speed
+     */
+
+    // Turning left
+    public static void turnLeft(double speed) {
+        rightFrontDrive.setPower(speed * 0.3);
+        leftFrontDrive.setPower(-speed * 0.3);
+        rightBackDrive.setPower(speed * 0.3);
+        leftBackDrive.setPower(-speed * 0.3);
+    }
+
+    // Turning right
+    public static void turnRight(double speed) {
+        rightFrontDrive.setPower(-speed * 0.3);
+        leftFrontDrive.setPower(speed * 0.3);
+        rightBackDrive.setPower(-speed * 0.3);
+        leftBackDrive.setPower(speed * 0.3);
+    }
+
+    /*
+     * These set of methods control the Glyph Lift system and the glyph claws
+     */
+
+    // GlyphLift moving up and down
+    /*public static void glyphLift(double speed){
+        glyphLift.setPower(speed);
+    }
+
+    // Opening the GlyphLift claws to grab the glyph
+    public static void openGlyph (){
+        glyphLiftRight.setPosition(0.8);
+        glyphLiftLeft.setPosition(0.8);
+    }
+
+    //Closing the GlyphLift claws to gain posession og glyph
+    public static void closeGlyph (){
+        glyphLiftRight.setPosition(0.3);
+        glyphLiftLeft.setPosition(0.3);
+    }*/
+
+    /*
+     * These methods are used to control the claw arm during endgame.
+     * the claw arm is used to pick the relic and use the claw to grab the relic
+     * the arm will extend forward to put the relic outside the field.
+     */
+
+    // Stop the claw arm movement
+    /*public static void clawArmStop(){
+        clawArm.setPower(0);
+    }
+
+    // Extend claw arm forward
+    public static void clawArmForward(double speed){
+        clawArm.setPower(Math.abs(speed));
+    }
+
+    // Extend claw arm backward
+    public static void clawArmBackward(double speed){
+        clawArm.setPower(-Math.abs(speed));
+    }*/
+}
