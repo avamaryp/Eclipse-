@@ -1,159 +1,38 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
 
 /**
- * Created by shrey on 2017-09-26.
- * This program intializes the motors before the TeleOp period, then takes input from the gamepad controllers
- * to drive the motors at a speed given by the driver
- * rightFrontDrive = right front motor
- * leftFrontDrive = left front motor
- * rightBackDrive = right back motor
- * leftBackDrive = left back motor
+ * Created by shrey on 2017-11-05.
  */
 
-@TeleOp(name="TeleOp", group="group")
+@TeleOp(name="New TeleOp", group="group")
 
-public class TeleOpMode extends LinearOpMode {
+public class New_TeleOp extends LinearOpMode{
 
     // Declaring and defining the motors
     //Robot and Timer
-    private HardwarePushBot robot = new HardwarePushBot();
-    public ElapsedTime runTime = new ElapsedTime();
+    public static HardwarePushBot robot = new HardwarePushBot();
+    public static ElapsedTime runTime = new ElapsedTime();
 
     //Drive
-    private DcMotor rightFrontDrive = null;
-    private DcMotor leftFrontDrive = null;
-    private DcMotor rightBackDrive = null;
-    private DcMotor leftBackDrive = null;
+    public static DcMotor rightFrontDrive = null;
+    public static DcMotor leftFrontDrive = null;
+    public static DcMotor rightBackDrive = null;
+    public static DcMotor leftBackDrive = null;
     //Relic claw
-    private DcMotor clawArm = null;
-    private DcMotor claw = null;
+    //public static DcMotor clawArm = null;
+    //public static DcMotor claw = null;
     //glyphlift subsystem
-    private DcMotor glyphLift = null;
-    private Servo glyphLiftRight = null;
-    private Servo glyphLiftLeft = null;
-    // "never used" means that the motor hasn't been called
-
-    /*
-     * This set of methods are used to make the drive drive forward and backward
-     */
-
-    // Used to move forward
-    public void forwardDrive(double speed) {
-        rightFrontDrive.setPower(speed);
-        leftFrontDrive.setPower(-speed);
-        rightBackDrive.setPower(speed);
-        leftBackDrive.setPower(-speed);
-    }
-
-    // Used to move backward
-    public void backwardDrive(double speed) {
-        rightFrontDrive.setPower(-speed);
-        leftFrontDrive.setPower(speed);
-        rightBackDrive.setPower(-speed);
-        leftBackDrive.setPower(speed);
-    }
-
-    /*
-     * This method is used to stop the drive motors in order for the robot to stop when in between
-     * the two thresholds. It's important to do this so the robot will stop, safely
-     */
-    public void stopMotors() { //always zero
-        rightFrontDrive.setPower(0);
-        leftFrontDrive.setPower(0);
-        rightBackDrive.setPower(0);
-        leftBackDrive.setPower(0);
-    }
-
-    /*
-     * This set of methods is used to turn the robot by making setting each in a different direction
-     * we multiply the speed by 0.2 to slow down the turn speed
-     */
-
-    // Turning left
-    public void turnLeft(double speed) {
-        rightFrontDrive.setPower(speed * 0.15);
-        leftFrontDrive.setPower(speed * 0.15);
-        rightBackDrive.setPower(speed * 0.15);
-        leftBackDrive.setPower(speed * 0.15);
-    }
-
-    // Turning right
-    public void turnRight(double speed) {
-        rightFrontDrive.setPower(-speed * 0.15);
-        leftFrontDrive.setPower(-speed * 0.15);
-        rightBackDrive.setPower(-speed * 0.15);
-        leftBackDrive.setPower(-speed * 0.15);
-    }
-    
-    /* 
-     * These set of methods control the Glyph Lift system and the glyph claws
-     */
-
-    // GlyphLift moving up and down
-    public void glyphLift(double speed){
-        glyphLift.setPower(speed);
-    }
-
-    // Opening the GlyphLift claws to grab the glyph
-    public void openGlyph (){
-        glyphLiftRight.setPosition(0.8);
-        glyphLiftLeft.setPosition(-0.8);
-    }
-
-    //Closing the GlyphLift claws to gain posession og glyph
-    public void closeGlyph (){
-        glyphLiftRight.setPosition(0.3);
-        glyphLiftLeft.setPosition(-0.3);
-    }
-    
-    /*
-     * These methods are used to control the claw arm during endgame.
-     * the claw arm is used to pick the relic and use the claw to grab the relic
-     * the arm will extend forward to put the relic outside the field.
-     */
-
-    // Stop the claw arm movement
-    public void clawArmStop(){
-        clawArm.setPower(0);
-    }
-
-    // Extend claw arm forward
-    public void clawArmForward(double speed){
-        clawArm.setPower(speed);}
-
-    // Extend claw arm backward
-    public void clawArmBackward(double speed){
-        clawArm.setPower(-speed);
-    }
-
-    /*
-     * These methods are used to control the claw that grabs the relic.
-     */
-
-    /* This method calculates the amount that the motor needs to move from an
-     * angle input given by user. Each degree is equal to 4 ticks on the encoder
-     */
-
-    // Calculating ticks from angles
-    public int moveBy(int angleDefined){
-        int ticks = angleDefined * 4;
-        return ticks;
-    }
-
-    // Setting the claw to move the certain angle and speed given by user
-    public void moveToAngle(int angle, double speed) {
-        claw.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        claw.setTargetPosition(angle);
-        claw.setPower(speed);
-    }
-    
-   
+    //public static DcMotor glyphLift = null;
+    //public static Servo glyphLiftRight = null;
+    //public static Servo glyphLiftLeft = null;
 
 
     @Override
@@ -175,24 +54,37 @@ public class TeleOpMode extends LinearOpMode {
         leftBackDrive = hardwareMap.dcMotor.get("lbd");   //3
 
         // GlyphLift subsystem
-        glyphLift = hardwareMap.dcMotor.get ("gyl");      //1
-        glyphLiftRight = hardwareMap.servo.get("glr");    //0
-        glyphLiftLeft = hardwareMap.servo.get("gll");     //1
+        //glyphLift = hardwareMap.dcMotor.get ("gyl");      //1
+        //glyphLiftRight = hardwareMap.servo.get("glr");    //0
+        //glyphLiftLeft = hardwareMap.servo.get("gll");     //1
 
         // Claw system
-        claw = hardwareMap.dcMotor.get("claw");           //2
-        clawArm = hardwareMap.dcMotor.get("ca");          //0
+        //claw = hardwareMap.dcMotor.get("claw");           //2
+        //clawArm = hardwareMap.dcMotor.get("ca");          //0
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
         //Drive Sub-system
+        rightFrontDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftFrontDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightBackDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftBackDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
 
+        //glyphLiftRight.setPosition(0.5);
+        //glyphLiftLeft.setPosition(0.5);
+
         //Claw system
-        claw.setDirection(DcMotor.Direction.FORWARD);
+        //claw.setDirection(DcMotor.Direction.FORWARD);
+        //clawArm.setDirection(DcMotor.Direction.FORWARD);
+
+        //claw.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        //claw.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -204,103 +96,119 @@ public class TeleOpMode extends LinearOpMode {
             // Comment out the method that's not used.  The default below is POV.
 
             // Drive variables
-            double power = -gamepad1.right_stick_y;
-            //double turn = gamepad1.left_stick_x;
+            double rightPower = -gamepad1.right_stick_y;
+            double leftPower = -gamepad1.left_stick_y;
             double reverse_Thres = -0.5;
             double forward_Thres = 0.5;
-            double left_Thres = -0.5;
-            double right_Thres = 0.5;
 
             // Glyph Lift system
-            double liftPow = gamepad2.left_stick_y;
+            double liftPow = -gamepad2.right_stick_y;
             double up_Thres = 0.5;
             double down_Thres = -0.5;
 
             // Claw system
-            double swingPow = gamepad2.right_stick_y;
+            double swingPow = gamepad2.left_stick_y;
             double downforward_Thres = 0.5;
             double upbackward_Thres = -0.5;
-            //Define the 'angle targets' using the calculation method of angles
-            int openAngle = claw.getCurrentPosition() + moveBy(45);
-            int closeAngle = claw.getCurrentPosition() + moveBy(45);
 
 
             // Send calculated power to wheels
             // Drive system
-            if (gamepad1.right_stick_y > reverse_Thres && gamepad1.right_stick_y < forward_Thres) {
+            if(rightPower < forward_Thres && rightPower > reverse_Thres && leftPower < forward_Thres && leftPower > reverse_Thres){
+                DriveMethods.stopRightMotors();
+                DriveMethods.stopLeftMotors();
+            }else if(rightPower != 0.0 && leftPower != 0.0) {
+                DriveMethods.driveRight(rightPower*0.8);
+                DriveMethods.driveLeft(leftPower*0.8);
+            }else if(rightPower != 0.0 && leftPower == 0.0){
+                DriveMethods.driveRight(rightPower * 0.3);
+            }else if(leftPower != 0.0 && rightPower == 0.0) {
+                DriveMethods.driveLeft(leftPower * 0.3);
+            }else if(rightPower < reverse_Thres && leftPower > forward_Thres){
+                DriveMethods.driveLeft(leftPower * 0.3);
+                DriveMethods.driveRight(rightPower * 0.3);
+            }else if(rightPower > forward_Thres && leftPower < reverse_Thres){
+                DriveMethods.driveLeft(leftPower * 0.3);
+                DriveMethods.driveRight(rightPower * 0.3);
+            }
+
+
+            /*if (gamepad1.right_stick_y > reverse_Thres && gamepad1.right_stick_y < forward_Thres) {
                 //stop all motors
-                stopMotors();
+                DriveMethods.stopMotors();
             }else if(gamepad1.right_stick_y < reverse_Thres) {//backward driving
                 if (gamepad1.left_stick_x < left_Thres) {
                     //turning left
-                    turnLeft(power);
+                    DriveMethods.turnLeft(power);
                 } else if (gamepad1.left_stick_x > right_Thres) {
                     //turning Right
-                    turnRight(power);
+                    DriveMethods.turnRight(power);
                 } else {
                     //driving backwards
-                    backwardDrive(power);
+                    DriveMethods.backwardDrive(power);
                 }
             }else {//forward driving
                 if (gamepad1.left_stick_x < left_Thres) {
                     //turning left
-                    turnLeft(power);
+                    DriveMethods.turnLeft(-power);
                 } else if (gamepad1.left_stick_x > right_Thres) {
                     //turning Right
-                    turnRight(power);
+                    DriveMethods.turnRight(-power);
                 } else {
                     //driving straight
-                    forwardDrive(-power);
+                    DriveMethods.forwardDrive(-power);
                 }
-            }
+            }*/
             // GlyphLift sub-system
             // Lifting glyph
-            if(liftPow < up_Thres && liftPow > down_Thres) {
-                glyphLift(0);
+            /*if(liftPow < up_Thres && liftPow > down_Thres) {
+                DriveMethods.glyphLift(0);
 
             }else if(liftPow > up_Thres){
-                glyphLift(liftPow);
+                DriveMethods.glyphLift(-liftPow * 0.2);
 
             }else{
-                glyphLift(-liftPow);
+                DriveMethods.glyphLift(liftPow * 0.2);
             }
 
             // Grabbing glyph
-            if(gamepad2.a){
-               openGlyph();
+            if(gamepad2.a) {
+                DriveMethods.openGlyph();
             }
-
             if(gamepad2.b){
-               closeGlyph();
-            }
-            
+                DriveMethods.closeGlyph();
+            }*/
+
             // Claw sub-system
             // Claw arm
-            if (gamepad2.left_stick_y < 0.5 && gamepad2.left_stick_y > -0.5) {
-                clawArmStop();
+            /*if (gamepad2.left_stick_y < downforward_Thres && gamepad2.left_stick_y > upbackward_Thres) {
+                DriveMethods.clawArmStop();
             }
-            if (gamepad2.left_stick_y > 0.5){
-                clawArmForward(swingPow);
+            if (gamepad2.left_stick_y > downforward_Thres){
+                DriveMethods.clawArmForward(-swingPow * 0.3);
             }
-            if (gamepad2.left_stick_y < -0.5){
-                clawArmBackward(swingPow);
-            }
+            if (gamepad2.left_stick_y < upbackward_Thres){
+                DriveMethods.clawArmBackward(swingPow * 0.3);
+            }*/
 
             // Claw to grab relic
             //if the y button on gamepad2 is pressed the claw will open
-            if(gamepad2.y) {
-                moveToAngle(openAngle, 0.3);
-            }
-            //if the x button on gamepad2 is pressed the claw will close
-            if(gamepad2.x){     
-                moveToAngle(closeAngle, -0.3);
-            }
+            /*if(gamepad2.x) {
+                claw.setPower(0.15);
+            }else if(gamepad2.y){
+                claw.setPower(-0.15);
+            }else{
+                claw.setPower(0);
+            }*/
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runTime.toString());
             telemetry.addData("Motors", "power (%.2f)");
             telemetry.addData("Right_Stick_y", gamepad1.right_stick_y);
             telemetry.addData("Left_Stick_x", gamepad1.left_stick_x);
+            telemetry.addData("Swing Power", swingPow);
+            //telemetry.addData("Right Servo", glyphLiftRight.getPosition());
+            //telemetry.addData("Left Servo", glyphLiftLeft.getPosition());
             telemetry.update();
         }
     }
