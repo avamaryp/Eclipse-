@@ -118,18 +118,18 @@ public class New_TeleOp extends LinearOpMode{
                 DriveMethods.stopRightMotors();
                 DriveMethods.stopLeftMotors();
             }else if(rightPower != 0.0 && leftPower != 0.0) {
-                DriveMethods.driveRight(rightPower*0.8);
-                DriveMethods.driveLeft(leftPower*0.8);
+                DriveMethods.driveRight(rightPower*0.5);
+                DriveMethods.driveLeft(leftPower*0.5);
             }else if(rightPower != 0.0 && leftPower == 0.0){
-                DriveMethods.driveRight(rightPower * 0.3);
+                DriveMethods.driveRight(rightPower * 0.5);
             }else if(leftPower != 0.0 && rightPower == 0.0) {
-                DriveMethods.driveLeft(leftPower * 0.3);
+                DriveMethods.driveLeft(leftPower * 0.5);
             }else if(rightPower < reverse_Thres && leftPower > forward_Thres){
-                DriveMethods.driveLeft(leftPower * 0.3);
-                DriveMethods.driveRight(rightPower * 0.3);
+                DriveMethods.driveLeft(leftPower * 0.5);
+                DriveMethods.driveRight(rightPower * 0.5);
             }else if(rightPower > forward_Thres && leftPower < reverse_Thres){
-                DriveMethods.driveLeft(leftPower * 0.3);
-                DriveMethods.driveRight(rightPower * 0.3);
+                DriveMethods.driveLeft(leftPower * 0.5);
+                DriveMethods.driveRight(rightPower * 0.5);
             }
 
 
