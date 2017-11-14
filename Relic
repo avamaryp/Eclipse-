@@ -1,0 +1,51 @@
+package org.firstinspires.ftc.robotcontroller.external.samples;
+
+/**
+ * Created by timzh on 11/14/2017.
+ */
+
+
+        import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+        import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+        import com.qualcomm.robotcore.hardware.DcMotor;
+        import com.qualcomm.robotcore.hardware.DcMotorSimple;
+        import com.qualcomm.robotcore.hardware.Servo;
+        import com.qualcomm.robotcore.util.ElapsedTime;
+
+
+public class Relic {
+    public static HardwarePushBot robot = new HardwarePushbot();
+    public static ElapsedTime runTime = new ElapsedTime();
+
+    public static Servo grabRelic = null;
+    public static DcMotor relicPosition = null;
+    @Override
+    public void runOpMode() throws InterruptedException {
+
+        grabRelic = hardwareMap.servo.get("gr");
+        relicPosition = hardwareMap.dcmotor.get("rp");
+        grabRelic.setPosition(0.3);
+
+        double pullPow = gamepad2.left_stick_y;
+        double forwardMovement_Thres = 0.5;
+        double backwardMovement_Thres = -0.5;
+
+        while(opModeIsActive()){
+            if(gamepad2.x) {//open
+                grabRelic.setPosition(0.8);
+            }
+            else if(gamepad2.y) {//close
+                grabRelic.setPosition(0.3);
+            }
+            else{
+                grabRelic.setPosition(0.3);
+            }
+
+        while(opModeIsAcitve()) {
+            if (gamepad2.left_stick.y < forwardMoement_Thres && gamepad2.left_stick.y > backwardMovement_Thres) {
+                pullPow = (0);
+            }
+        }
+        }
+    }
+}
