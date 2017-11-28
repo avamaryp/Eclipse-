@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
+
 /**
  * Created by shrey on 2017-11-05.
  */
@@ -22,18 +23,21 @@ public class New_TeleOp extends LinearOpMode{
     public static ElapsedTime runTime = new ElapsedTime();
 
     //Drive
-    public static DcMotor rightFrontDrive = null;
-    public static DcMotor leftFrontDrive = null;
-    public static DcMotor rightBackDrive = null;
-    public static DcMotor leftBackDrive = null;
+    //public static DcMotor rightFrontDrive = null;
+    //public static DcMotor leftFrontDrive = null;
+    //public static DcMotor rightBackDrive = null;
+    //public static DcMotor leftBackDrive = null;
+
     //Relic claw
     //public static DcMotor clawArm = null;
     //public static DcMotor claw = null;
+
     //glyphlift subsystem
     //public static DcMotor glyphLift = null;
     //public static Servo glyphLiftRight = null;
     //public static Servo glyphLiftLeft = null;
 
+    public static Servo colorSensorArm = null;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -47,16 +51,17 @@ public class New_TeleOp extends LinearOpMode{
 
         // This part is called intializing the variables or hardware elements
 
+        colorSensorArm = hardwareMap.servo.get("csa");    //2
         // Drive
-        rightFrontDrive = hardwareMap.dcMotor.get("rfd"); //0
+        /*rightFrontDrive = hardwareMap.dcMotor.get("rfd"); //0
         leftFrontDrive = hardwareMap.dcMotor.get("lfd");  //1
         rightBackDrive = hardwareMap.dcMotor.get("rbd");  //2
         leftBackDrive = hardwareMap.dcMotor.get("lbd");   //3
 
         // GlyphLift subsystem
-        //glyphLift = hardwareMap.dcMotor.get ("gyl");      //1
-        //glyphLiftRight = hardwareMap.servo.get("glr");    //0
-        //glyphLiftLeft = hardwareMap.servo.get("gll");     //1
+        glyphLift = hardwareMap.dcMotor.get ("gyl");      //1
+        glyphLiftRight = hardwareMap.servo.get("glr");    //0
+        glyphLiftLeft = hardwareMap.servo.get("gll");     //1
 
         // Claw system
         //claw = hardwareMap.dcMotor.get("claw");           //2
@@ -75,9 +80,6 @@ public class New_TeleOp extends LinearOpMode{
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
 
-        //glyphLiftRight.setPosition(0.5);
-        //glyphLiftLeft.setPosition(0.5);
-
         //Claw system
         //claw.setDirection(DcMotor.Direction.FORWARD);
         //clawArm.setDirection(DcMotor.Direction.FORWARD);
@@ -85,6 +87,7 @@ public class New_TeleOp extends LinearOpMode{
         //claw.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         //claw.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        */
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -94,6 +97,11 @@ public class New_TeleOp extends LinearOpMode{
             // Setup a variable for each drive wheel to save power level for telemetry
             // Choose to drive using either Tank Mode, or POV Mode
             // Comment out the method that's not used.  The default below is POV.
+
+
+            //glyphLiftRight.setPosition(0.5);
+            //glyphLiftLeft.setPosition(0.5);
+            //colorSensorArm.setPosition(1);
 
             // Drive variables
             double rightPower = -gamepad1.right_stick_y;
@@ -107,10 +115,13 @@ public class New_TeleOp extends LinearOpMode{
             double down_Thres = -0.5;
 
             // Claw system
-            double swingPow = gamepad2.left_stick_y;
-            double downforward_Thres = 0.5;
-            double upbackward_Thres = -0.5;
+            double pullPow = gamepad2.left_stick_y;
+            double forwardMovement_Thres = 0.5;
+            double backwardMovement_Thres = -0.5;
+            double drive_Speed = 0.6;
 
+            //Color Sensor System
+            boolean ColorSensorArmPow = gamepad2.dpad_down;
 
             // Send calculated power to wheels
             // Drive system
@@ -118,95 +129,71 @@ public class New_TeleOp extends LinearOpMode{
                 DriveMethods.stopRightMotors();
                 DriveMethods.stopLeftMotors();
             }else if(rightPower != 0.0 && leftPower != 0.0) {
-                DriveMethods.driveRight(rightPower*0.5);
-                DriveMethods.driveLeft(leftPower*0.5);
+                DriveMethods.driveRight(rightPower * drive_Speed);
+                DriveMethods.driveLeft(leftPower * drive_Speed);
             }else if(rightPower != 0.0 && leftPower == 0.0){
-                DriveMethods.driveRight(rightPower * 0.5);
+                DriveMethods.driveRight(rightPower * drive_Speed);
             }else if(leftPower != 0.0 && rightPower == 0.0) {
-                DriveMethods.driveLeft(leftPower * 0.5);
+                DriveMethods.driveLeft(leftPower * drive_Speed);
             }else if(rightPower < reverse_Thres && leftPower > forward_Thres){
-                DriveMethods.driveLeft(leftPower * 0.5);
-                DriveMethods.driveRight(rightPower * 0.5);
+                DriveMethods.driveLeft(leftPower * drive_Speed);
+                DriveMethods.driveRight(rightPower * drive_Speed);
             }else if(rightPower > forward_Thres && leftPower < reverse_Thres){
-                DriveMethods.driveLeft(leftPower * 0.5);
-                DriveMethods.driveRight(rightPower * 0.5);
+                DriveMethods.driveLeft(leftPower * drive_Speed);
+                DriveMethods.driveRight(rightPower * drive_Speed);
             }
 
-
-            /*if (gamepad1.right_stick_y > reverse_Thres && gamepad1.right_stick_y < forward_Thres) {
-                //stop all motors
-                DriveMethods.stopMotors();
-            }else if(gamepad1.right_stick_y < reverse_Thres) {//backward driving
-                if (gamepad1.left_stick_x < left_Thres) {
-                    //turning left
-                    DriveMethods.turnLeft(power);
-                } else if (gamepad1.left_stick_x > right_Thres) {
-                    //turning Right
-                    DriveMethods.turnRight(power);
-                } else {
-                    //driving backwards
-                    DriveMethods.backwardDrive(power);
-                }
-            }else {//forward driving
-                if (gamepad1.left_stick_x < left_Thres) {
-                    //turning left
-                    DriveMethods.turnLeft(-power);
-                } else if (gamepad1.left_stick_x > right_Thres) {
-                    //turning Right
-                    DriveMethods.turnRight(-power);
-                } else {
-                    //driving straight
-                    DriveMethods.forwardDrive(-power);
-                }
+            //Claw subsystem
+            /*if(gamepad2.x) {//open
+                DriveMethods.leaveRelic();
+            }
+            else if(gamepad2.y) {//close
+                DriveMethods.getRelic();
+            }
+            else{
+                DriveMethods.getRelic();
             }*/
+
             // GlyphLift sub-system
             // Lifting glyph
-            /*if(liftPow < up_Thres && liftPow > down_Thres) {
+            if(liftPow < up_Thres && liftPow > down_Thres) {
                 DriveMethods.glyphLift(0);
 
             }else if(liftPow > up_Thres){
-                DriveMethods.glyphLift(-liftPow * 0.2);
+                DriveMethods.glyphLift(-liftPow * -0.3);
 
             }else{
-                DriveMethods.glyphLift(liftPow * 0.2);
+                DriveMethods.glyphLift(liftPow * 0.3);
             }
+
+            //Glyphlift
+            /*if(gamepad2.y){// going up
+                DriveMethods.glyphLift(0.4);
+            }
+            if(gamepad2.x){
+                DriveMethods.glyphLift(-0.4);
+            }*/
 
             // Grabbing glyph
-            if(gamepad2.a) {
+            if(gamepad2.b) {
                 DriveMethods.openGlyph();
             }
-            if(gamepad2.b){
+            if(gamepad2.a){
                 DriveMethods.closeGlyph();
-            }*/
-
-            // Claw sub-system
-            // Claw arm
-            /*if (gamepad2.left_stick_y < downforward_Thres && gamepad2.left_stick_y > upbackward_Thres) {
-                DriveMethods.clawArmStop();
             }
-            if (gamepad2.left_stick_y > downforward_Thres){
-                DriveMethods.clawArmForward(-swingPow * 0.3);
+            if(gamepad2.dpad_up){
+                colorSensorArm.setPosition(1);
             }
-            if (gamepad2.left_stick_y < upbackward_Thres){
-                DriveMethods.clawArmBackward(swingPow * 0.3);
-            }*/
+            if(gamepad2.dpad_down){
+                colorSensorArm.setPosition(0.7);
+            }
 
-            // Claw to grab relic
-            //if the y button on gamepad2 is pressed the claw will open
-            /*if(gamepad2.x) {
-                claw.setPower(0.15);
-            }else if(gamepad2.y){
-                claw.setPower(-0.15);
-            }else{
-                claw.setPower(0);
-            }*/
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runTime.toString());
             telemetry.addData("Motors", "power (%.2f)");
             telemetry.addData("Right_Stick_y", gamepad1.right_stick_y);
             telemetry.addData("Left_Stick_x", gamepad1.left_stick_x);
-            telemetry.addData("Swing Power", swingPow);
             //telemetry.addData("Right Servo", glyphLiftRight.getPosition());
             //telemetry.addData("Left Servo", glyphLiftLeft.getPosition());
             telemetry.update();
